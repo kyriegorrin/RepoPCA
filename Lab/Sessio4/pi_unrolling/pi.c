@@ -36,7 +36,8 @@ unsigned DIV239r[10][239];
 
 int unrollFactor = 12;
 int unrollFactorD25 = 4;
-//int unrollFactorD239 = 4;
+int unrollFactorD239 = 4;
+//int unrollFactorLD_IF = 8;
 
 void memo(){
 
@@ -93,13 +94,25 @@ void DIVIDE239( signed char *x){
     int k;
     unsigned r, r_new;
 
-    r = 0;                                       
+    r = 0;
+	//Original version
+	/*
     for( k = 0; k <= N4; k++ )                  
     {                                                                      
         r_new = DIV239r[x[k]][r];
         x[k] = DIV239x[x[k]][r];
 	r = r_new;
-    }                          
+    }*/
+
+	for(k = 0; k <= N4-unrollFactorD239; k+=unrollFactorD239){
+		UNROLL_DIV239(k);
+		UNROLL_DIV239(k+1);
+		UNROLL_DIV239(k+2);
+		UNROLL_DIV239(k+3);
+	}
+	for(; k <= N4; k++){
+		UNROLL_DIV239(k);
+	}
 }
 
 void DIVIDE( signed char *x, int n )                           
@@ -128,12 +141,12 @@ void LONGDIV( signed char *x, int n )
     {                                            
         r = 0;                                   
         for( k = 0; k <= N4; k++ )               
-        {                                        
+        {     
             u = r * 10 + x[k];		
             q = u / n;                  
             r = u - q * n;              
-            x[k] = q;                    
-        }
+            x[k] = q;
+		}
     }                                            
     else                                         
     {                                            
