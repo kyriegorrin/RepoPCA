@@ -1,0 +1,613 @@
+/* 
+ * Command line: opannotate --source pi.g3 
+ * 
+ * Interpretation of command line:
+ * Output annotated source file with samples
+ * Output all files
+ * 
+ * CPU: ARM Cortex-A9, speed 1998 MHz (estimated)
+ * Counted BR_MIS_PRED events (Mispredicted or not predicted branch speculatively executed) with a unit mask of 0x00 (No unit mask) count 3000
+ */
+/* 
+ * Total samples for file : "/home/analog/Laboratori/Sessio4/lab4_session/pi_branch/pi.c"
+ * 
+ *   7657 29.6049
+ */
+
+
+               :#include <memory.h>
+               :#include <stdio.h>
+               :#include <stdlib.h>
+               :
+               ://Definició de macros trambòliques de unrolling
+               :#define UNROLL_SUB(_k)				\
+               : 	if( (x[_k] = y[_k] - z[_k]) < 0 ){ \
+               :    	x[_k] += 10;                 \
+               :        z[_k-1]++;}                  \
+               :			
+               :#define UNROLL_DIV25(_k)		\
+               :        r_new = DIV25r[x[_k]][r];       \
+               :        x[_k] = DIV25x[x[_k]][r];	\
+               :	r = r_new;
+               :
+               :#define UNROLL_DIV239(_k)		\
+               :        r_new = DIV239r[x[_k]][r];      \
+               :        x[_k] = DIV239x[x[_k]][r];	\
+               :	r = r_new;
+               :
+               :#define UNROLL_DIV239x2(_k)		\
+               :        r_new = DIV239r[x[_k]][r];      \
+               :        x[_k] = DIV239x[x[_k]][r];	\
+               :	r = r_new;						\
+               :        r2_new = DIV239r[x[_k]][r2];      \
+               :        x[_k] = DIV239x[x[_k]][r2];	\
+               :	r2 = r2_new;
+               :
+               :#define UNROLL_LONGDIV_IF(_k)		\
+               :            u = r * 10 + x[_k];		\
+               :            q = u / n;                  \
+               :            r = u - q * n;              \
+               :            x[_k] = q;                    
+               :
+               :#define SUBTRACT_BETTER(_k)			\
+               :  x[_k] = y[_k] - z[_k];			\
+               :  mask = x[_k] >> 31;			\
+               :  x[_k] += (10&mask);			\
+               :  z[_k-1] -= mask;
+               :        
+               :int N, N4;
+               :signed char a[25480], b[25480], c[25480];
+               :signed char string[100];
+               :
+               :char DIV25x[10][25];
+               :char DIV239x[10][239];
+               :
+               :unsigned DIV25r[10][25];
+               :unsigned DIV239r[10][239];
+               :
+               :int unrollFactor = 12;
+               :int unrollFactorD25 = 4;
+               :int unrollFactorD239 = 4;
+               :int unrollFactorD239x2 = 2;
+               :
+               :void memo(){
+               :
+               :    int i, j;
+               :    unsigned q, r, u;
+               :    
+               :    for (i = 0; i < 10; i++){
+               :      for (j = 0; j < 25; j++){
+               :	u = j * 10 + i;                       
+               :        q = u / 25;                               
+               :        DIV25r[i][j] = u - q * 25;                           
+               :        DIV25x[i][j] = q;  
+               :      }
+               :    }   
+               :    
+               :    for (i = 0; i < 10; i++){
+               :      for (j = 0; j < 239; j++){
+               :	u = j * 10 + i;                       
+               :        q = u / 239;                               
+               :        DIV239r[i][j] = u - q * 239;                           
+               :        DIV239x[i][j] = q;  
+               :      }
+               :    }
+               :}
+               :
+               :void DIVIDE25( signed char *x){
+               :    int k;
+               :    unsigned r, r_new;
+               :
+     1  0.0039 :    r = 0;     
+               :
+     1  0.0039 :	for(k = 0; k <= N4-unrollFactorD25; k+=unrollFactorD25){
+               :		UNROLL_DIV25(k);
+     8  0.0309 :		UNROLL_DIV25(k+1);
+     5  0.0193 :		UNROLL_DIV25(k+2);
+               :		UNROLL_DIV25(k+3);
+               :	}
+               :	for(; k <= N4; k++){
+               :		UNROLL_DIV25(k);
+               :	}
+               :
+               :}
+               :
+               :void DIVIDE239( signed char *x){
+               :    int k;
+               :    unsigned r, r_new;
+               :
+               :    r = 0;
+               :
+               :	for(k = 0; k <= N4-unrollFactorD239; k+=unrollFactorD239){
+               :		UNROLL_DIV239(k);
+               :		UNROLL_DIV239(k+1);
+               :		UNROLL_DIV239(k+2);
+               :		UNROLL_DIV239(k+3);
+               :	}
+               :	for(; k <= N4; k++){
+               :		UNROLL_DIV239(k);
+               :	}
+               :}
+               :
+               :void DIVIDE239x2( signed char *x){
+               :    int k;
+               :    unsigned r, r_new, r2, r2_new;
+               :
+               :    r = 0;
+               :	r2 = 0;
+               :	
+               :	for(k = 0; k <= N4-unrollFactorD239x2; k+=unrollFactorD239x2){
+     1  0.0039 :		UNROLL_DIV239x2(k);
+    11  0.0425 :		UNROLL_DIV239x2(k+1);
+               :	}
+               :	for(; k <= N4; k++){
+     4  0.0155 :		UNROLL_DIV239x2(k);
+               :	}
+               :}
+               :
+               :void DIVIDE( signed char *x, int n )                           
+               :{                                                
+               :    int j, k;
+               :    unsigned q, r, u;
+               :    long v;
+               :
+               :    r = 0;                                       
+               :    for(k = 0; k <= N4; k++)                  
+               :    {                                            
+               :        u = r * 10 + x[k]; 
+               :        q = u / n;                               
+               :        r = u - q * n;                           
+               :        x[k] = q;                                
+               :    }                                           
+               :}
+               :
+               :void LONGDIV( signed char *x, int n )                          
+               :{                                                
+               :    int j, k;
+               :    unsigned q, r, u;
+               :    long v;
+               :
+     1  0.0039 :    if( n < 6553 )                               
+               :    {                                            
+               :        r = 0;                                   
+  1042  4.0288 :        for( k = 0; k <= N4; k++ )               
+               :        {     
+  1071  4.1409 :            u = r * 10 + x[k];		
+     1  0.0039 :            q = u / n;                  
+               :            r = u - q * n;              
+               :            x[k] = q;
+               :		}
+               :    }                                            
+               :    else                                         
+               :    {                                            
+               :        r = 0;                                   
+  2221  8.5872 :        for( k = 0; k <= N4; k++ )              
+               :        {                                       
+  1239  4.7904 :            if( r < 6553 )                      
+               :            {                                   
+   527  2.0376 :                u = r * 10 + x[k];              
+   489  1.8907 :                q = u / n;                      
+               :                r = u - q * n;                  
+               :            }                                   
+               :            else                                
+               :            {                                   
+   537  2.0762 :                v = (long) r * 10 + x[k];       
+   428  1.6548 :                q = v / n;                      
+               :                r = v - q * n;                  
+               :            }                                   
+    19  0.0735 :            x[k] = q;                           
+               :        }                                       
+               :    }                                           
+               :}
+               :
+               :void MULTIPLY( signed char *x, int n )                        
+               :{                                            
+               :    int j, k;
+               :    unsigned q, r, u;
+               :    long v;
+               :    r = 0;                                   
+               :    for( k = N4; k >= 0; k-- )               
+               :    {                                        
+               :        q = n * x[k] + r;                    
+               :        r = q / 10;                          
+               :        x[k] = q - r * 10;                   
+               :    }                                        
+               :}
+               :
+               :void SET( signed char *x, int n )                              
+               :{                                                
+               :    memset( x, 0, N4 + 1 );                      
+               :    x[0] = n;                                    
+               :}
+               :
+               :
+               :void SUBTRACT( signed char *x, signed char *y, signed char *z )                      
+               :{                                                 /* SUBTRACT total:     42  0.1624 */
+               :    int j, k, mask;
+               :    unsigned q, r, u;
+               :    long v;
+     1  0.0039 :    for( k = N4; k >= unrollFactor; k-= unrollFactor )                   
+               :    {   
+               :		//UNROLL_SUB(k);                                         
+               :		//UNROLL_SUB(k-1);                                         
+               :		//UNROLL_SUB(k-2);                                         
+               :		//UNROLL_SUB(k-3);                                         
+               :		//UNROLL_SUB(k-4);                                         
+               :		//UNROLL_SUB(k-5);                                         
+               :		//UNROLL_SUB(k-6);                                         
+               :		//UNROLL_SUB(k-7);                                         
+               :		//UNROLL_SUB(k-8);                                         
+               :		//UNROLL_SUB(k-9);                                         
+               :		//UNROLL_SUB(k-10);                                         
+               :		//UNROLL_SUB(k-11);                                         
+     4  0.0155 :		SUBTRACT_BETTER(k);
+    21  0.0812 :		SUBTRACT_BETTER(k-1);
+               :		SUBTRACT_BETTER(k-2);
+     1  0.0039 :		SUBTRACT_BETTER(k-3);
+     2  0.0077 :		SUBTRACT_BETTER(k-4);
+     1  0.0039 :		SUBTRACT_BETTER(k-5);
+     1  0.0039 :		SUBTRACT_BETTER(k-6);
+               :		SUBTRACT_BETTER(k-7);
+               :		SUBTRACT_BETTER(k-8);
+               :		SUBTRACT_BETTER(k-9);
+               :		SUBTRACT_BETTER(k-10);
+               :		SUBTRACT_BETTER(k-11);
+               :    }
+               :
+               :	k = N4%unrollFactor;
+               :	for(; k >= 0; --k){
+               :		//UNROLL_SUB(k);                                         
+    11  0.0425 :		SUBTRACT_BETTER(k);
+               :	}                                             
+               :}
+               :
+               :
+               :void calculate( void );
+               :void progress( void );
+               :void epilog( void );
+               :
+               :
+               :int main( int argc, char *argv[] )
+               :{
+               :    N = 10000;
+               :
+               :    if( argc > 1 )
+               :        N = atoi(argv[1]);
+               :
+               :    setbuf(stdout, NULL);
+               :
+               :	//Insertem operacions de memorització
+               :	memo();
+               :
+               :    calculate();
+               :
+               :    epilog();
+               :
+               :    return 0;
+               :}
+               :
+               :void calculate( void )
+               :{
+               :    int j;
+               :
+               :    N4 = N + 4; /* calculate total:   7620 29.4618 */
+               :
+               :    SET( a, 0 );
+               :    SET( b, 0 );
+               :
+     7  0.0271 :    for( j = 2 * N4 + 1; j >= 3; j -= 2 )
+               :    {
+               :        SET( c, 1 );
+               :        LONGDIV( c, j );
+               :
+     1  0.0039 :        SUBTRACT( a, c, a );
+               :        DIVIDE25(a);
+               :
+     1  0.0039 :        SUBTRACT( b, c, b );
+               :       	//DIVIDE239(b);
+               :        //DIVIDE239(b);
+               :	   	DIVIDE239x2(b);
+               :
+               :        progress();
+               :    }
+               :
+               :    SET( c, 1 );
+               :
+               :    SUBTRACT( a, c, a );
+               :    DIVIDE( a, 5 );
+               :
+               :    SUBTRACT( b, c, b );
+               :    DIVIDE239(b);
+               :
+               :    MULTIPLY( a, 4 );
+               :    SUBTRACT( a, a, b );
+               :    MULTIPLY( a, 4 );
+               :
+               :    progress();
+               :}
+               :
+               :void progress( void )
+               :{
+               :    printf(".");
+               :}
+               :
+               :void epilog( void )
+               :{
+               :    int j;
+               :
+               :    {
+               :        fprintf( stdout, " \n3.");
+               :        for( j = 1; j <= N; j++ )
+               :        {
+               :            fprintf( stdout, "%d", a[j]);
+               :            if( j % 5  == 0 )
+               :                if( j % 50 == 0 )
+               :                    if( j % 250  == 0 )
+               :                        fprintf( stdout, "    <%d>\n\n   ", j );
+               :                    else
+               :                        fprintf( stdout, "\n   " );
+               :                else
+               :                    fprintf( stdout, " " );
+               :        }
+               :    }
+               :}
+               :
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/libio/fileops.c"
+ * 
+ *     72  0.2784
+ */
+
+
+ /* _IO_do_write@@GLIBC_2.4 total:      9  0.0348 */
+ /* new_do_write total:     28  0.1083 */
+ /* _IO_file_overflow@@GLIBC_2.4 total:     11  0.0425 */
+ /* _IO_file_write@@GLIBC_2.4 total:     22  0.0851 */
+ /* _IO_file_xsputn@@GLIBC_2.4 total:      2  0.0077 */
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/stdio-common/vfprintf.c"
+ * 
+ *     36  0.1392
+ */
+
+
+ /* vfprintf total:     26  0.1005 */
+ /* buffered_vfprintf total:     10  0.0387 */
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/string/../ports/sysdeps/arm/memset.S"
+ * 
+ *     11  0.0425
+ */
+
+
+ /* memset total:     11  0.0425 */
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/io/../sysdeps/unix/syscall-template.S"
+ * 
+ *      9  0.0348
+ */
+
+
+ /* write total:      9  0.0348 */
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/libio/putchar.c"
+ * 
+ *      8  0.0309
+ */
+
+
+ /* putchar total:     11  0.0425 */
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/string/strchrnul.c"
+ * 
+ *      6  0.0232
+ */
+
+
+ /* strchrnul total:      6  0.0232 */
+/* 
+ * Total samples for file : "/usr/include/arm-linux-gnueabihf/bits/string3.h"
+ * 
+ *      5  0.0193
+ */
+
+
+               :/* Copyright (C) 2004-2014 Free Software Foundation, Inc.
+               :   This file is part of the GNU C Library.
+               :
+               :   The GNU C Library is free software; you can redistribute it and/or
+               :   modify it under the terms of the GNU Lesser General Public
+               :   License as published by the Free Software Foundation; either
+               :   version 2.1 of the License, or (at your option) any later version.
+               :
+               :   The GNU C Library is distributed in the hope that it will be useful,
+               :   but WITHOUT ANY WARRANTY; without even the implied warranty of
+               :   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+               :   Lesser General Public License for more details.
+               :
+               :   You should have received a copy of the GNU Lesser General Public
+               :   License along with the GNU C Library; if not, see
+               :   <http://www.gnu.org/licenses/>.  */
+               :
+               :#ifndef _STRING_H
+               :# error "Never use <bits/string3.h> directly; include <string.h> instead."
+               :#endif
+               :
+               :__warndecl (__warn_memset_zero_len,
+               :	    "memset used with constant zero length parameter; this could be due to transposed parameters");
+               :
+               :#ifndef __cplusplus
+               :/* XXX This is temporarily.  We should not redefine any of the symbols
+               :   and instead integrate the error checking into the original
+               :   definitions.  */
+               :# undef memcpy
+               :# undef memmove
+               :# undef memset
+               :# undef strcat
+               :# undef strcpy
+               :# undef strncat
+               :# undef strncpy
+               :# ifdef __USE_GNU
+               :#  undef mempcpy
+               :#  undef stpcpy
+               :# endif
+               :# ifdef __USE_BSD
+               :#  undef bcopy
+               :#  undef bzero
+               :# endif
+               :#endif
+               :
+               :
+               :__fortify_function void *
+               :__NTH (memcpy (void *__restrict __dest, const void *__restrict __src,
+               :	       size_t __len))
+               :{
+               :  return __builtin___memcpy_chk (__dest, __src, __len, __bos0 (__dest));
+               :}
+               :
+               :__fortify_function void *
+               :__NTH (memmove (void *__dest, const void *__src, size_t __len))
+               :{
+               :  return __builtin___memmove_chk (__dest, __src, __len, __bos0 (__dest));
+               :}
+               :
+               :#ifdef __USE_GNU
+               :__fortify_function void *
+               :__NTH (mempcpy (void *__restrict __dest, const void *__restrict __src,
+               :		size_t __len))
+               :{
+               :  return __builtin___mempcpy_chk (__dest, __src, __len, __bos0 (__dest));
+               :}
+               :#endif
+               :
+               :
+               :/* The first two tests here help to catch a somewhat common problem
+               :   where the second and third parameter are transposed.  This is
+               :   especially problematic if the intended fill value is zero.  In this
+               :   case no work is done at all.  We detect these problems by referring
+               :   non-existing functions.  */
+               :__fortify_function void *
+               :__NTH (memset (void *__dest, int __ch, size_t __len))
+               :{
+               :  if (__builtin_constant_p (__len) && __len == 0
+               :      && (!__builtin_constant_p (__ch) || __ch != 0))
+               :    {
+               :      __warn_memset_zero_len ();
+               :      return __dest;
+               :    }
+     5  0.0193 :  return __builtin___memset_chk (__dest, __ch, __len, __bos0 (__dest));
+               :}
+               :
+               :#ifdef __USE_BSD
+               :__fortify_function void
+               :__NTH (bcopy (const void *__src, void *__dest, size_t __len))
+               :{
+               :  (void) __builtin___memmove_chk (__dest, __src, __len, __bos0 (__dest));
+               :}
+               :
+               :__fortify_function void
+               :__NTH (bzero (void *__dest, size_t __len))
+               :{
+               :  (void) __builtin___memset_chk (__dest, '\0', __len, __bos0 (__dest));
+               :}
+               :#endif
+               :
+               :__fortify_function char *
+               :__NTH (strcpy (char *__restrict __dest, const char *__restrict __src))
+               :{
+               :  return __builtin___strcpy_chk (__dest, __src, __bos (__dest));
+               :}
+               :
+               :#ifdef __USE_GNU
+               :__fortify_function char *
+               :__NTH (stpcpy (char *__restrict __dest, const char *__restrict __src))
+               :{
+               :  return __builtin___stpcpy_chk (__dest, __src, __bos (__dest));
+               :}
+               :#endif
+               :
+               :
+               :__fortify_function char *
+               :__NTH (strncpy (char *__restrict __dest, const char *__restrict __src,
+               :		size_t __len))
+               :{
+               :  return __builtin___strncpy_chk (__dest, __src, __len, __bos (__dest));
+               :}
+               :
+               :// XXX We have no corresponding builtin yet.
+               :extern char *__stpncpy_chk (char *__dest, const char *__src, size_t __n,
+               :			    size_t __destlen) __THROW;
+               :extern char *__REDIRECT_NTH (__stpncpy_alias, (char *__dest, const char *__src,
+               :					       size_t __n), stpncpy);
+               :
+               :__fortify_function char *
+               :__NTH (stpncpy (char *__dest, const char *__src, size_t __n))
+               :{
+               :  if (__bos (__dest) != (size_t) -1
+               :      && (!__builtin_constant_p (__n) || __n <= __bos (__dest)))
+               :    return __stpncpy_chk (__dest, __src, __n, __bos (__dest));
+               :  return __stpncpy_alias (__dest, __src, __n);
+               :}
+               :
+               :
+               :__fortify_function char *
+               :__NTH (strcat (char *__restrict __dest, const char *__restrict __src))
+               :{
+               :  return __builtin___strcat_chk (__dest, __src, __bos (__dest));
+               :}
+               :
+               :
+               :__fortify_function char *
+               :__NTH (strncat (char *__restrict __dest, const char *__restrict __src,
+               :		size_t __len))
+               :{
+               :  return __builtin___strncat_chk (__dest, __src, __len, __bos (__dest));
+               :}
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/libio/genops.c"
+ * 
+ *      4  0.0155
+ */
+
+
+ /* __overflow total:      1  0.0039 */
+ /* _IO_default_xsputn total:      3  0.0116 */
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/libio/libioP.h"
+ * 
+ *      3  0.0116
+ */
+
+
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/debug/memset_chk.c"
+ * 
+ *      3  0.0116
+ */
+
+
+ /* __memset_chk total:      3  0.0116 */
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/stdio-common/_itoa.c"
+ * 
+ *      1  0.0039
+ */
+
+
+ /* _itoa_word total:      1  0.0039 */
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/elf/dl-load.c"
+ * 
+ *      1  0.0039
+ */
+
+
+ /* _dl_map_object_from_fd total:      1  0.0039 */
+/* 
+ * Total samples for file : "/build/buildd/eglibc-2.19/elf/dl-deps.c"
+ * 
+ *      1  0.0039
+ */
+
+
+ /* _dl_map_object_deps total:      1  0.0039 */
