@@ -1,0 +1,17 @@
+LESSON 1
+--------
+
+1) To get the maximum speed-up, we have to assume that 30% of execution time to be optimized to the point of being instantaneous.
+With that being said, the speedup would be 1/(1 - 0.3) = 1.43.
+
+2) Without applying Ahmdal's Law, we know that a reduction of half the execution time is a speedup of 2.
+Reducing the execution time to a quarter of the initial time would be a speedup of 4. Following this logic, we end up
+with an eight of the execution time in order to have a speedup of 8 (it would be about a 12.5% of the original time).
+
+3) //NOT ENTIRELY SURE, IT LOOKS LIKE I HAVE TO DO MORE SPECIALIZED NUMBER CRUNCHING
+Assuming a normal distribution, we can see that the worst case scenario for both versions would be 4.5s, 
+while the best case scenario is 3.5s (the mean time of the second code) for the original code and 2.5s for the new one.
+Knowing this, it would be safe to assume that the second version is better because most of the time it would be performing
+as well or better than the first version.
+
+If they have the same behavior with 30 executions, the answer would be the same as before. 
