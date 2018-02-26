@@ -23,4 +23,36 @@ float dot_product(float *a, float *b, unsigned n){
 	return result;
 }
 
-11) 
+11) /*We're assuming that we can do the adding operation. If we have to know the result without actually
+doing the operation beforehand, we have to change this solution.*/
+
+To know (or more precisely, check) if there is overflow, we just have to see if the output of the
+adding operation is lower than one of its inputs. 
+
+C Code:
+
+bool overflowSafe(unsigned a, unsigned b){
+	int c = a + b;
+	return !(c < a || c < b);
+}
+
+12) A non-analytic approach would be to take advantage of the C language data types and compare two
+outputs of the same operation, but one computed with integers and the other with "long" inputs.
+When comparing "int" with "long" data types, the "int" is casted to "long". If there was no overflow,
+both values should be equal.
+
+The solution proposed wouldn't work because most of the time you just would overflow backwards to the original
+value, masking the actual overflow. 
+
+C code:
+
+bool overflowSafe(int a, int b){
+	int c;
+	long cAux;
+	c = a + b;
+	cAux = (long) a + (long) b; //We cast the original values to long
+	return c == cAux;
+}
+
+WARNING: THE CODE DOESN'T WORK. EVEN IF THERE'S OVERFLOW, C HAS THE CORRECT OUTPUT IF TREATED AS LONG.
+TRY USING THE MIN_INT AND MAX_INT DIRECTIVES INSTEAD.
