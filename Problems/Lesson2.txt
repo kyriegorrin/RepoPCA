@@ -42,7 +42,8 @@ When comparing "int" with "long" data types, the "int" is casted to "long". If t
 both values should be equal.
 
 The solution proposed wouldn't work because most of the time you just would overflow backwards to the original
-value, masking the actual overflow. 
+value, masking the actual overflow. And that's not even factoring in the fact that overflows with signed
+integers in C have undefined behavior. 
 
 C code:
 
@@ -56,3 +57,8 @@ bool overflowSafe(int a, int b){
 
 WARNING: THE CODE DOESN'T WORK. EVEN IF THERE'S OVERFLOW, C HAS THE CORRECT OUTPUT IF TREATED AS LONG.
 TRY USING THE MIN_INT AND MAX_INT DIRECTIVES INSTEAD.
+
+13) 
+a: 
+
+14) 
