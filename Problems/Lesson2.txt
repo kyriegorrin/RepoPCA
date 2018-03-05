@@ -87,4 +87,14 @@ You should stick with Approach 1.
 13) 
 a: 
 
-14) 
+14) A possible code:
+
+bool is_big_endian(){
+	short a;
+	char *b = &a;
+	
+	a = 0x00ff;
+	
+	if(*b == 0) return true;
+	else return false;
+} 
