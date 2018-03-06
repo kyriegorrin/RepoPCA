@@ -36,7 +36,7 @@ bool overflowSafe(unsigned a, unsigned b){
 	return !(c < a || c < b);
 }
 
-12) A non-analytic approach would be to take advantage of the C language data types and compare two
+12) A non-analytic approach as marth would be to take advantage of the C language data types and compare two
 outputs of the same operation, but one computed with integers and the other with "long" inputs.
 When comparing "int" with "long" data types, the "int" is implicitly casted to "long". If there was no overflow,
 both values should be equal.
