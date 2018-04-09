@@ -1,0 +1,268 @@
+--------------------------------------------------------------------------------
+Profile data file 'callgrind.out.2246' (creator: callgrind-3.10.0.SVN)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 35716578
+Trigger: Program termination
+Profiled target:  ./pi.0 1000 (PID 2246, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+         Ir 
+--------------------------------------------------------------------------------
+371,175,638  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+         Ir  file:function
+--------------------------------------------------------------------------------
+131,163,455  ???:__udivsi3 [/home/analog/Laboratori/Sessio3/lab3_session/pi/pi.0]
+121,220,066  pi.c:DIVIDE [/home/analog/Laboratori/Sessio3/lab3_session/pi/pi.0]
+ 76,817,643  pi.c:SUBTRACT [/home/analog/Laboratori/Sessio3/lab3_session/pi/pi.0]
+ 40,384,896  pi.c:LONGDIV [/home/analog/Laboratori/Sessio3/lab3_session/pi/pi.0]
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: pi.c
+--------------------------------------------------------------------------------
+        Ir 
+
+-- line 2 ----------------------------------------
+         .  #include <stdio.h>
+         .  #include <stdlib.h>
+         .  
+         .  int N, N4;
+         .  signed char a[25480], b[25480], c[25480];
+         .  signed char string[100];
+         .  
+         .  void DIVIDE( signed char *x, int n )                           
+    15,070  {                                                
+         .      int j, k;
+         .      unsigned q, r, u;
+         .      long v;
+         .  
+     6,028      r = 0;                                       
+27,288,756      for( k = 0; k <= N4; k++ )                  
+         .      {                                            
+39,377,910          u = r * 10 + x[k];                       
+18,174,420          q = u / n;                               
+100,014,551  => ???:__udivsi3 (3029070x)
+18,174,420          r = u - q * n;                           
+18,174,420          x[k] = q;                                
+         .      }                                           
+     9,042  }
+         .  
+         .  void LONGDIV( signed char *x, int n )                          
+     5,020  {                                                
+         .      int j, k;
+         .      unsigned q, r, u;
+         .      long v;
+         .  
+     4,016      if( n < 6553 )                               
+         .      {                                            
+     2,008          r = 0;                                   
+ 9,091,220          for( k = 0; k <= N4; k++ )               
+         .          {                                        
+13,117,260              u = r * 10 + x[k];                   
+ 6,054,120              q = u / n;                           
+31,132,666  => ???:__udivsi3 (1009020x)
+ 6,054,120              r = u - q * n;                       
+ 6,054,120              x[k] = q;                            
+         .          }                                       
+         .      }                                            
+         .      else                                         
+         .      {                                            
+         .          r = 0;                                   
+         .          for( k = 0; k <= N4; k++ )              
+         .          {                                       
+         .              if( r < 6553 )                      
+-- line 47 ----------------------------------------
+-- line 54 ----------------------------------------
+         .              {                                   
+         .                  v = (long) r * 10 + x[k];       
+         .                  q = v / n;                      
+         .                  r = v - q * n;                  
+         .              }                                   
+         .              x[k] = q;                           
+         .          }                                       
+         .      }                                           
+     3,012  }
+         .  
+         .  void MULTIPLY( signed char *x, int n )                        
+        10  {                                            
+         .      int j, k;
+         .      unsigned q, r, u;
+         .      long v;
+         4      r = 0;                                   
+    12,076      for( k = N4; k >= 0; k-- )               
+         .      {                                        
+    22,110          q = n * x[k] + r;                    
+    12,060          r = q / 10;                          
+    32,160          x[k] = q - r * 10;                   
+         .      }                                        
+         8  }
+         .  
+         .  void SET( signed char *x, int n )                              
+     5,035  {                                                
+    18,130      memset( x, 0, N4 + 1 );                      
+       319  => /build/buildd/eglibc-2.19/string/../ports/sysdeps/arm/memset.S:memset (1x)
+     1,000  => /build/buildd/eglibc-2.19/elf/../ports/sysdeps/arm/dl-trampoline.S:_dl_runtime_resolve (1x)
+         .      x[0] = n;                                    
+         .  }
+         .  
+         .  
+         .  void SUBTRACT( signed char *x, signed char *y, signed char *z )                      
+    12,066  {                                                
+         .      int j, k;
+         .      unsigned q, r, u;
+         .      long v;
+12,142,418      for( k = N4; k >= 0; k-- )                   
+         .      {                                            
+42,442,155          if( (x[k] = y[k] - z[k]) < 0 )           
+         .          {                                        
+12,693,120              x[k] += 10;                          
+ 9,519,840              z[k-1]++;                            
+         .          }                                        
+         .      }                                            
+     8,044  }
+         .  
+         .  
+         .  void calculate( void );
+         .  void progress( void );
+         .  void epilog( void );
+         .  
+         .  
+         .  int main( int argc, char *argv[] )
+         5  {
+         4      N = 10000;
+         .  
+         3      if( argc > 1 )
+        30          N = atoi(argv[1]);
+       173  => /build/buildd/eglibc-2.19/stdlib/atoi.c:atoi (1x)
+     2,056  => /build/buildd/eglibc-2.19/elf/../ports/sysdeps/arm/dl-trampoline.S:_dl_runtime_resolve (2x)
+371,058,170  => pi.c:calculate (1x)
+       246  => /build/buildd/eglibc-2.19/libio/setbuf.c:setbuf (1x)
+         .  
+         .      setbuf(stdout, NULL);
+         .  
+         .      calculate();
+         .  
+         1      epilog();
+   810,697  => pi.c:epilog (1x)
+         .  
+         1      return 0;
+         4  }
+         .  
+         .  void calculate( void )
+         3  {
+         .      int j;
+         .  
+         7      N4 = N + 4;
+         .  
+         4      SET( a, 0 );
+370,247,458  => pi.c:SET (1x)
+         4      SET( b, 0 );
+370,246,108  => pi.c:SET'2 (1x)
+         .  
+     6,034      for( j = 2 * N4 + 1; j >= 3; j -= 2 )
+         .      {
+     4,016          SET( c, 1 );
+370,245,752  => pi.c:SET'2 (1x)
+     4,016          LONGDIV( c, j );
+71,517,562  => pi.c:LONGDIV (1004x)
+         .  
+     7,028          SUBTRACT( a, c, a );
+38,369,499  => pi.c:SUBTRACT (1004x)
+     4,016          DIVIDE( a, 25 );
+72,733,386  => pi.c:DIVIDE (1004x)
+         .  
+     7,028          SUBTRACT( b, c, b );
+38,313,765  => pi.c:SUBTRACT (1004x)
+     4,016          DIVIDE( b, 239 );
+74,198,607  => pi.c:DIVIDE (1004x)
+     4,016          DIVIDE( b, 239 );
+74,157,474  => pi.c:DIVIDE (1004x)
+         .  
+     1,004          progress();
+185,397,694,533  => pi.c:progress'2 (1003x)
+369,896,348  => pi.c:progress (1x)
+         .      }
+         .  
+         4      SET( c, 1 );
+   358,554  => pi.c:SET'2 (1x)
+         .  
+         7      SUBTRACT( a, c, a );
+    48,237  => pi.c:SUBTRACT (1x)
+         4      DIVIDE( a, 5 );
+    71,188  => pi.c:DIVIDE (1x)
+         .  
+         7      SUBTRACT( b, c, b );
+    48,237  => pi.c:SUBTRACT (1x)
+         4      DIVIDE( b, 239 );
+    73,962  => pi.c:DIVIDE (1x)
+         .  
+         4      MULTIPLY( a, 4 );
+    39,214  => pi.c:MULTIPLY (1x)
+         7      SUBTRACT( a, a, b );
+    37,905  => pi.c:SUBTRACT (1x)
+         4      MULTIPLY( a, 4 );
+    39,214  => pi.c:MULTIPLY (1x)
+         .  
+         1      progress();
+       217  => pi.c:progress'2 (1x)
+         3  }
+         .  
+         .  /*
+         .  
+         .   N = 10000                      
+         .   A = 0                          
+         .   B = 0                          
+         .   J = 2 * (N + 4) + 1            
+         .   FOR J = J TO 3 STEP -2         
+-- line 167 ----------------------------------------
+-- line 170 ----------------------------------------
+         .   NEXT J                         
+         .   A = (1 - A) / 5                
+         .   B = (1 - B) / 239              
+         .   PI = (A * 4 - B) * 4           
+         .  
+         .  */
+         .  
+         .  void progress( void )
+     2,010  {
+     6,034      printf(".");
+     1,074  => /build/buildd/eglibc-2.19/elf/../ports/sysdeps/arm/dl-trampoline.S:_dl_runtime_resolve (1x)
+       233  => /build/buildd/eglibc-2.19/libio/putchar.c:putchar (1x)
+         .  }
+         .  
+         .  void epilog( void )
+         3  {
+         .      int j;
+         .  
+         .      {
+    43,535          fprintf( stdout, " \n3.");
+     3,362  => /build/buildd/eglibc-2.19/elf/../ports/sysdeps/arm/dl-trampoline.S:_dl_runtime_resolve (3x)
+    36,180  => /build/buildd/eglibc-2.19/libio/fputc.c:fputc (180x)
+   723,543  => /build/buildd/eglibc-2.19/stdio-common/fprintf.c:fprintf (1004x)
+     4,069  => /build/buildd/eglibc-2.19/libio/iofwrite.c:fwrite (17x)
+         .          for( j = 1; j <= N; j++ )
+         .          {
+         .              fprintf( stdout, "%d", a[j]);
+         .              if( j % 5  == 0 )
+         .                  if( j % 50 == 0 )
+         .                      if( j % 250  == 0 )
+         .                          fprintf( stdout, "    <%d>\n\n   ", j );
+         .                      else
+-- line 195 ----------------------------------------
+
+--------------------------------------------------------------------------------
+Ir 
+--------------------------------------------------------------------------------
+64  percentage of events annotated
+
