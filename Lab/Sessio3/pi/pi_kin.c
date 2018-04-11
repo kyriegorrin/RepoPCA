@@ -3,80 +3,59 @@
 #include <stdlib.h>
 
 int N, N4;
-signed char a[25480], b[25480], c[25480];
-signed char string[100];
+char a[25480], b[25480], c[25480];
+char string[100];
 
-//unsigned r10[239]; //Aquest nomes guarda r*10
-//unsigned q25[250];
-//unsigned q239[2400];
-//unsigned r25[10];
-//unsigned r239[11];
+char DIV5x[256][5];
+char DIV25x[256][25];
+char DIV239x[256][239];
 
-char DIV25x[10][25];
-char DIV239x[10][239];
+unsigned DIV5r[256][5];
+unsigned DIV25r[256][25];
+unsigned DIV239r[256][239];
 
-unsigned DIV25r[10][25];
-unsigned DIV239r[10][239];
 
-void memo(){
-		/*
-	int i;
-	for(i = 0; i < 239; ++i){
-		r10[i] = i*10;
-	}
-		
-	for(i = 0; i < 250; ++i){
-		q25[i] = i/25;
-	}
-	
-	for(i = 0; i < 2400; ++i){
-		q239[i] = i/239;
-	}
 
-	for(i = 0; i < 10; ++i){
-		r25[i] = i*25;
-	}
 
-	for(i = 0; i < 11; ++i){
-		r239[i] = i*239;
-	}*/
-
-    int i, j;
-    unsigned q, r, u;
-    
-    for (i = 0; i < 10; i++){
-      for (j = 0; j < 25; j++){
-		u = j * 10 + i;                       
-        q = u / 25;                               
-        DIV25r[i][j] = u - q * 25;                           
-        DIV25x[i][j] = q;  
-      }
-    }   
-    
-    for (i = 0; i < 10; i++){
-      for (j = 0; j < 239; j++){
-		u = j * 10 + i;                       
-        q = u / 239;                               
-        DIV239r[i][j] = u - q * 239;                           
-        DIV239x[i][j] = q;  
-      }
-    }
-}
-
-void DIVIDE25( signed char *x){
+//n = 5,25,239
 /*
+void DIVIDE( char *x, int n )                           
+{                                                
     int j, k;
     unsigned q, r, u;
     long v;
 
-    r = 0;
-    for(k = 0; k <= N4; k++)                  
+    r = 0;                                       
+    for( k = 0; k <= N4; k++ )                  
     {                                            
-        u = r10[r] + x[k]; 
-        x[k] = q25[u];                               
-        r = u - r25[x[k]];                           
+        u = r * 10 + x[k];                       
+        q = u / n;                               
+        r = u - q * n;                           
+        x[k] = q;                                
     }                                           
-*/
+}*/
+
+
+
+
+void DIVIDE5( char *x)                           
+{                                                
+    int k;
+    unsigned r, r_new;
+
+    r = 0;                                       
+    for( k = 0; k <= N4; k++ )                  
+    {                                                                      
+        r_new = DIV5r[x[k]][r];                           
+        x[k] = DIV5x[x[k]][r];
+	r = r_new;
+    }                                           
+}
+
+
+
+void DIVIDE25( char *x )                           
+{                                                
     int k;
     unsigned r, r_new;
 
@@ -85,24 +64,14 @@ void DIVIDE25( signed char *x){
     {                                                                      
         r_new = DIV25r[x[k]][r];                           
         x[k] = DIV25x[x[k]][r];
-		r = r_new;
+	r = r_new;
     }                                           
 }
 
-void DIVIDE239( signed char *x){
-/*
-    int j, k;
-    unsigned q, r, u;
-    long v;
 
-    r = 0;                                       
-    for(k = 0; k <= N4; k++)                  
-    {                                            
-        u = r10[r] + x[k]; 
-        x[k] = q239[u];                               
-        r = u - r239[x[k]];                           
-    }                                           
-*/
+
+void DIVIDE239( char *x )                           
+{                                                
     int k;
     unsigned r, r_new;
 
@@ -111,27 +80,19 @@ void DIVIDE239( signed char *x){
     {                                                                      
         r_new = DIV239r[x[k]][r];                           
         x[k] = DIV239x[x[k]][r];
-		r = r_new;
+	r = r_new;
     }                                           
 }
 
-void DIVIDE( signed char *x, int n )                           
-{                                                
-    int j, k;
-    unsigned q, r, u;
-    long v;
 
-    r = 0;                                       
-    for(k = 0; k <= N4; k++)                  
-    {                                            
-        u = r * 10 + x[k]; 
-        q = u / n;                               
-        r = u - q * n;                           
-        x[k] = q;                                
-    }                                           
-}
 
-void LONGDIV( signed char *x, int n )                          
+
+
+
+
+
+
+void LONGDIV( char *x, int n )                          
 {                                                
     int j, k;
     unsigned q, r, u;
@@ -170,7 +131,7 @@ void LONGDIV( signed char *x, int n )
     }                                           
 }
 
-void MULTIPLY( signed char *x, int n )                        
+void MULTIPLY( char *x, int n )                        
 {                                            
     int j, k;
     unsigned q, r, u;
@@ -184,14 +145,14 @@ void MULTIPLY( signed char *x, int n )
     }                                        
 }
 
-void SET( signed char *x, int n )                              
+void SET( char *x, int n )                              
 {                                                
     memset( x, 0, N4 + 1 );                      
     x[0] = n;                                    
 }
 
 
-void SUBTRACT( signed char *x, signed char *y, signed char *z )                      
+void SUBTRACT( char *x, char *y, char *z )                      
 {                                                
     int j, k;
     unsigned q, r, u;
@@ -221,9 +182,6 @@ int main( int argc, char *argv[] )
 
     setbuf(stdout, NULL);
 
-	//Insertem operacions de memorització
-	memo();
-
     calculate();
 
     epilog();
@@ -236,6 +194,37 @@ void calculate( void )
     int j;
 
     N4 = N + 4;
+    
+    int k,kk;
+    unsigned q, r, u;
+    
+    for (k = 0; k < 256; k++){
+      for (kk = 0; kk < 5; kk++){
+	u = kk * 10 + k;                       
+        q = u / 5;                               
+        DIV5r[k][kk] = u - q * 5;                           
+        DIV5x[k][kk] = q;  
+      }
+    }
+    
+    for (k = 0; k < 256; k++){
+      for (kk = 0; kk < 25; kk++){
+	u = kk * 10 + k;                       
+        q = u / 25;                               
+        DIV25r[k][kk] = u - q * 25;                           
+        DIV25x[k][kk] = q;  
+      }
+    }   
+    
+    for (k = 0; k < 256; k++){
+      for (kk = 0; kk < 239; kk++){
+	u = kk * 10 + k;                       
+        q = u / 239;                               
+        DIV239r[k][kk] = u - q * 239;                           
+        DIV239x[k][kk] = q;  
+      }
+    }
+    
 
     SET( a, 0 );
     SET( b, 0 );
@@ -246,11 +235,11 @@ void calculate( void )
         LONGDIV( c, j );
 
         SUBTRACT( a, c, a );
-        DIVIDE25(a);
+        DIVIDE25( a );
 
         SUBTRACT( b, c, b );
-        DIVIDE239(b);
-        DIVIDE239(b);
+        DIVIDE239( b );
+        DIVIDE239( b );
 
         progress();
     }
@@ -258,10 +247,10 @@ void calculate( void )
     SET( c, 1 );
 
     SUBTRACT( a, c, a );
-    DIVIDE( a, 5 );
+    DIVIDE5( a );
 
     SUBTRACT( b, c, b );
-    DIVIDE239(b);
+    DIVIDE239( b );
 
     MULTIPLY( a, 4 );
     SUBTRACT( a, a, b );
