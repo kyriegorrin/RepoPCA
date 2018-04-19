@@ -1,0 +1,59 @@
+LLISTA DE ELAPSED TIME EN TOTES LES VERSIONS
+--------------------------------------------
+
+abs.g0
+-------
+1.88
+1.88
+1.92
+1.87
+
+abs.g3
+------
+1.02
+1.05
+1.03
+1.00
+
+abs_new.g0
+----------
+1.39
+1.40
+1.39
+1.34
+
+abs_new.g3
+----------
+0.96
+0.96
+0.96
+1.02
+
+
+SPEEDUP ORIGINAL (NMAX = 100000000)
+----------------
+((1.88+1.88+1.92+1.87)/4)/((1.02+1.05+1.03+1.00)/4) = 1.84
+
+
+DIFFERENCES
+-----------
+O0 fa push i pop a la pila, O3 no.
+O0 fa operacions de salt condicional i negació (per a detectar negatius i aplicar valor absolut)
+	mentre que O3 nomes fa operacions de shift, xor i resta (resum, està aplicant bithacks que ja coneixem de temes anteriors).
+
+
+NEW VERSION TIMES EXPLANATION
+-----------------------------
+Podem veure que mentre que la nova versió amb O0 ha millorat els temps respecte la original, la nova versió amb O3 ha mantingut pràcticament
+els mateixos temps que en la seva versió original.
+
+- Explicacions diferències de temps entre els dos O0:
+
+Com que hem estabilitzat i unificat quins valors vindrien en negatiu i quins en positiu, el nostre predictor de salts ha tingut 
+la possibilitat de prediure més salts ja que tots els valors que provoquen el mateix salt han vingut en ordre.
+Fer que tots els valors puguin venir en qualsevol ordre provoca que el predictor de salts no es pugui adaptar i tingui moltes més fallades.
+
+- Explicacions de mateixos temps entre els dos O3:
+
+Això és simple, ja que mirant el codi en assembly veiem que la versió O3 no conté cap tipus de salt i sempre aplica els mateixos bithacks,
+fent independent el temps d'execució respecte al valor o ordre de l'entrada.
