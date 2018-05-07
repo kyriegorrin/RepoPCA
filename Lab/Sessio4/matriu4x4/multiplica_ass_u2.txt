@@ -1,0 +1,106 @@
+00008630 <multiplica>:
+    8630:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+    8634:	b085      	sub	sp, #20
+    8636:	9301      	str	r3, [sp, #4]
+    8638:	2b00      	cmp	r3, #0
+    863a:	f000 80ad 	beq.w	8798 <multiplica+0x168>
+    863e:	f04f 0e00 	mov.w	lr, #0
+    8642:	f101 0410 	add.w	r4, r1, #16
+    8646:	ea4f 1e0e 	mov.w	lr, lr, lsl #4
+    864a:	f04f 0a00 	mov.w	sl, #0
+    864e:	448e      	add	lr, r1
+    8650:	f101 0c20 	add.w	ip, r1, #32
+    8654:	f101 0830 	add.w	r8, r1, #48	; 0x30
+    8658:	46d3      	mov	fp, sl
+    865a:	46f1      	mov	r9, lr
+    865c:	4692      	mov	sl, r2
+    865e:	46a6      	mov	lr, r4
+    8660:	1d03      	adds	r3, r0, #4
+    8662:	9003      	str	r0, [sp, #12]
+    8664:	9302      	str	r3, [sp, #8]
+    8666:	9a03      	ldr	r2, [sp, #12]
+    8668:	4653      	mov	r3, sl
+    866a:	9802      	ldr	r0, [sp, #8]
+    866c:	2100      	movs	r1, #0
+    866e:	f850 5c04 	ldr.w	r5, [r0, #-4]
+    8672:	3210      	adds	r2, #16
+    8674:	f8d9 6000 	ldr.w	r6, [r9]
+    8678:	3010      	adds	r0, #16
+    867a:	f85a 4001 	ldr.w	r4, [sl, r1]
+    867e:	3310      	adds	r3, #16
+    8680:	fb06 4405 	mla	r4, r6, r5, r4
+    8684:	f84a 4001 	str.w	r4, [sl, r1]
+    8688:	f852 5c0c 	ldr.w	r5, [r2, #-12]
+    868c:	f8de 7000 	ldr.w	r7, [lr]
+    8690:	fb07 4405 	mla	r4, r7, r5, r4
+    8694:	f84a 4001 	str.w	r4, [sl, r1]
+    8698:	f852 5c08 	ldr.w	r5, [r2, #-8]
+    869c:	f8dc 7000 	ldr.w	r7, [ip]
+    86a0:	fb07 4405 	mla	r4, r7, r5, r4
+    86a4:	f84a 4001 	str.w	r4, [sl, r1]
+    86a8:	f852 7c04 	ldr.w	r7, [r2, #-4]
+    86ac:	f8d8 5000 	ldr.w	r5, [r8]
+    86b0:	fb05 4707 	mla	r7, r5, r7, r4
+    86b4:	f84a 7001 	str.w	r7, [sl, r1]
+    86b8:	3110      	adds	r1, #16
+    86ba:	f850 5c14 	ldr.w	r5, [r0, #-20]
+    86be:	2940      	cmp	r1, #64	; 0x40
+    86c0:	f8d9 6004 	ldr.w	r6, [r9, #4]
+    86c4:	f853 4c0c 	ldr.w	r4, [r3, #-12]
+    86c8:	fb06 4405 	mla	r4, r6, r5, r4
+    86cc:	f843 4c0c 	str.w	r4, [r3, #-12]
+    86d0:	f852 5c0c 	ldr.w	r5, [r2, #-12]
+    86d4:	f8de 7004 	ldr.w	r7, [lr, #4]
+    86d8:	fb07 4405 	mla	r4, r7, r5, r4
+    86dc:	f843 4c0c 	str.w	r4, [r3, #-12]
+    86e0:	f852 5c08 	ldr.w	r5, [r2, #-8]
+    86e4:	f8dc 7004 	ldr.w	r7, [ip, #4]
+    86e8:	fb07 4405 	mla	r4, r7, r5, r4
+    86ec:	f843 4c0c 	str.w	r4, [r3, #-12]
+    86f0:	f852 7c04 	ldr.w	r7, [r2, #-4]
+    86f4:	f8d8 5004 	ldr.w	r5, [r8, #4]
+    86f8:	fb05 4707 	mla	r7, r5, r7, r4
+    86fc:	f853 5c08 	ldr.w	r5, [r3, #-8]
+    8700:	f843 7c0c 	str.w	r7, [r3, #-12]
+    8704:	f850 4c14 	ldr.w	r4, [r0, #-20]
+    8708:	f8d9 7008 	ldr.w	r7, [r9, #8]
+    870c:	fb07 5604 	mla	r6, r7, r4, r5
+    8710:	f843 6c08 	str.w	r6, [r3, #-8]
+    8714:	f852 7c0c 	ldr.w	r7, [r2, #-12]
+    8718:	f8de 4008 	ldr.w	r4, [lr, #8]
+    871c:	fb04 6707 	mla	r7, r4, r7, r6
+    8720:	f843 7c08 	str.w	r7, [r3, #-8]
+    8724:	f852 6c08 	ldr.w	r6, [r2, #-8]
+    8728:	f8dc 4008 	ldr.w	r4, [ip, #8]
+    872c:	fb04 7606 	mla	r6, r4, r6, r7
+    8730:	f843 6c08 	str.w	r6, [r3, #-8]
+    8734:	f852 4c04 	ldr.w	r4, [r2, #-4]
+    8738:	f8d8 5008 	ldr.w	r5, [r8, #8]
+    873c:	f853 7c04 	ldr.w	r7, [r3, #-4]
+    8740:	fb05 6404 	mla	r4, r5, r4, r6
+    8744:	f843 4c08 	str.w	r4, [r3, #-8]
+    8748:	f850 5c14 	ldr.w	r5, [r0, #-20]
+    874c:	f8d9 400c 	ldr.w	r4, [r9, #12]
+    8750:	fb04 7505 	mla	r5, r4, r5, r7
+    8754:	f843 5c04 	str.w	r5, [r3, #-4]
+    8758:	f852 6c0c 	ldr.w	r6, [r2, #-12]
+    875c:	f8de 400c 	ldr.w	r4, [lr, #12]
+    8760:	fb04 5606 	mla	r6, r4, r6, r5
+    8764:	f843 6c04 	str.w	r6, [r3, #-4]
+    8768:	f852 4c08 	ldr.w	r4, [r2, #-8]
+    876c:	f8dc 500c 	ldr.w	r5, [ip, #12]
+    8770:	fb05 6404 	mla	r4, r5, r4, r6
+    8774:	f843 4c04 	str.w	r4, [r3, #-4]
+    8778:	f852 5c04 	ldr.w	r5, [r2, #-4]
+    877c:	f8d8 700c 	ldr.w	r7, [r8, #12]
+    8780:	fb07 4405 	mla	r4, r7, r5, r4
+    8784:	f843 4c04 	str.w	r4, [r3, #-4]
+    8788:	f47f af71 	bne.w	866e <multiplica+0x3e>
+    878c:	9f01      	ldr	r7, [sp, #4]
+    878e:	f10b 0b01 	add.w	fp, fp, #1
+    8792:	45bb      	cmp	fp, r7
+    8794:	f47f af67 	bne.w	8666 <multiplica+0x36>
+    8798:	b005      	add	sp, #20
+    879a:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+    879e:	bf00      	nop
+

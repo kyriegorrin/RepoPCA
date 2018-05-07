@@ -1,0 +1,31 @@
+00008570 <multiplica>:
+    8570:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+    8574:	469b      	mov	fp, r3
+    8576:	f04f 0a00 	mov.w	sl, #0
+    857a:	b323      	cbz	r3, 85c6 <multiplica+0x56>
+    857c:	f04f 0900 	mov.w	r9, #0
+    8580:	eb02 0e09 	add.w	lr, r2, r9
+    8584:	eb00 0809 	add.w	r8, r0, r9
+    8588:	2600      	movs	r6, #0
+    858a:	f85e 5006 	ldr.w	r5, [lr, r6]
+    858e:	eb01 0c06 	add.w	ip, r1, r6
+    8592:	2400      	movs	r4, #0
+    8594:	f858 7004 	ldr.w	r7, [r8, r4]
+    8598:	f85c 3024 	ldr.w	r3, [ip, r4, lsl #2]
+    859c:	3404      	adds	r4, #4
+    859e:	2c10      	cmp	r4, #16
+    85a0:	fb03 5507 	mla	r5, r3, r7, r5
+    85a4:	f84e 5006 	str.w	r5, [lr, r6]
+    85a8:	d1f4      	bne.n	8594 <multiplica+0x24>
+    85aa:	3604      	adds	r6, #4
+    85ac:	2e10      	cmp	r6, #16
+    85ae:	d1ec      	bne.n	858a <multiplica+0x1a>
+    85b0:	f109 0910 	add.w	r9, r9, #16
+    85b4:	f1b9 0f40 	cmp.w	r9, #64	; 0x40
+    85b8:	d1e2      	bne.n	8580 <multiplica+0x10>
+    85ba:	f10a 0a01 	add.w	sl, sl, #1
+    85be:	45da      	cmp	sl, fp
+    85c0:	d1dc      	bne.n	857c <multiplica+0xc>
+    85c2:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+    85c6:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+    85ca:	bf00      	nop

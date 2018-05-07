@@ -1,0 +1,50 @@
+000085b4 <multiplica>:
+    85b4:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+    85b8:	b083      	sub	sp, #12
+    85ba:	2b00      	cmp	r3, #0
+    85bc:	d039      	beq.n	8632 <multiplica+0x7e>
+    85be:	f04f 0800 	mov.w	r8, #0
+    85c2:	f101 0c10 	add.w	ip, r1, #16
+    85c6:	ea4f 1808 	mov.w	r8, r8, lsl #4
+    85ca:	f101 0e20 	add.w	lr, r1, #32
+    85ce:	4488      	add	r8, r1
+    85d0:	f101 0930 	add.w	r9, r1, #48	; 0x30
+    85d4:	4692      	mov	sl, r2
+    85d6:	f04f 0b00 	mov.w	fp, #0
+    85da:	9000      	str	r0, [sp, #0]
+    85dc:	9301      	str	r3, [sp, #4]
+    85de:	9900      	ldr	r1, [sp, #0]
+    85e0:	2700      	movs	r7, #0
+    85e2:	eb0a 0207 	add.w	r2, sl, r7
+    85e6:	2300      	movs	r3, #0
+    85e8:	f858 6003 	ldr.w	r6, [r8, r3]
+    85ec:	6808      	ldr	r0, [r1, #0]
+    85ee:	58d4      	ldr	r4, [r2, r3]
+    85f0:	fb06 4400 	mla	r4, r6, r0, r4
+    85f4:	50d4      	str	r4, [r2, r3]
+    85f6:	f85c 0003 	ldr.w	r0, [ip, r3]
+    85fa:	684e      	ldr	r6, [r1, #4]
+    85fc:	fb00 4606 	mla	r6, r0, r6, r4
+    8600:	50d6      	str	r6, [r2, r3]
+    8602:	f85e 0003 	ldr.w	r0, [lr, r3]
+    8606:	688d      	ldr	r5, [r1, #8]
+    8608:	fb00 6505 	mla	r5, r0, r5, r6
+    860c:	50d5      	str	r5, [r2, r3]
+    860e:	f859 4003 	ldr.w	r4, [r9, r3]
+    8612:	68c8      	ldr	r0, [r1, #12]
+    8614:	fb04 5000 	mla	r0, r4, r0, r5
+    8618:	50d0      	str	r0, [r2, r3]
+    861a:	3304      	adds	r3, #4
+    861c:	2b10      	cmp	r3, #16
+    861e:	d1e3      	bne.n	85e8 <multiplica+0x34>
+    8620:	3710      	adds	r7, #16
+    8622:	3110      	adds	r1, #16
+    8624:	2f40      	cmp	r7, #64	; 0x40
+    8626:	d1dc      	bne.n	85e2 <multiplica+0x2e>
+    8628:	9b01      	ldr	r3, [sp, #4]
+    862a:	f10b 0b01 	add.w	fp, fp, #1
+    862e:	459b      	cmp	fp, r3
+    8630:	d1d5      	bne.n	85de <multiplica+0x2a>
+    8632:	b003      	add	sp, #12
+    8634:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+
