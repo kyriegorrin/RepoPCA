@@ -1,0 +1,29 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+ 91.43     16.64    16.64                             mult1 (mult1.c:24 @ 8ac4)
+  5.82     17.70     1.06                             mult1 (mult1.c:24 @ 8ad0)
+  1.46     17.96     0.27                             mult1 (mult1.c:21 @ 8ada)
+  1.24     18.19     0.23                             mult1 (mult1.c:23 @ 8ad8)
+  0.05     18.20     0.01                             write
+  0.00     18.20     0.00        1     0.00     0.00  main (mult1.c:41 @ 88b4)
+
+			Call graph
+
+
+granularity: each sample hit covers 4 byte(s) for 0.05% of 18.20 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[5]      0.1    0.01    0.00                 write [5]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_start_main [660]
+[6]      0.0    0.00    0.00       1         main (mult1.c:41 @ 88b4) [6]
+-----------------------------------------------
+
+Index by function name
+
+   [6] main (mult1.c:41 @ 88b4) [2] mult1 (mult1.c:24 @ 8ad0) [3] mult1 (mult1.c:21 @ 8ada)
+   [1] mult1 (mult1.c:24 @ 8ac4) [4] mult1 (mult1.c:23 @ 8ad8) [5] write
