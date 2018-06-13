@@ -76,7 +76,6 @@ void rgb_to_yuv(t_pixel_rgb *rgb, t_pixel_yuv *yuv, int len, int N_iter)
 
 int main (int argc, char *argv[])
 {
-  printf("Abans 1r MEMalign");
   t_pixel_rgb rgb; t_pixel_yuv yuv; // Vectores para malloc
 
   int i;
@@ -123,12 +122,12 @@ int main (int argc, char *argv[])
      rgb.b[i]=(float) (((i+7823454) << 25) ^0xbad51cde);
   }
 
-  printf("Abans de funcio");
-
   rgb_to_yuv(&rgb, &yuv, n, NIt);
  
   //TODO: Arreglar les escriptures
-  write(1, yuv, n*sizeof(t_pixel_yuv));
+  write(1, yuv.y, n*sizeof(float));
+  write(1, yuv.u, n*sizeof(float));
+  write(1, yuv.v, n*sizeof(float));
   
   return(0);
 }
